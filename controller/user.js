@@ -1,5 +1,7 @@
 const { response } = require("express");
 const { Course, User } = require("../db");
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = require("../config");
 
 const signup = async (req, res) => {
   const username = req.body.username;
@@ -50,4 +52,24 @@ const getallcourses = async (req, res) => {
   });
 };
 
-module.exports = { signup, getPurchaseCourses, purchaseCourse, getallcourses };
+const signin = async (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+
+  const user = await User.find({
+    username,
+    password,
+  });
+
+  const token = await jwt.sign({ username, password }, JWT_SECRET);
+
+  res.json({ token });
+};
+
+module.exports = {
+  signup,
+  getPurchaseCourses,
+  purchaseCourse,
+  getallcourses,
+  signin,
+};
